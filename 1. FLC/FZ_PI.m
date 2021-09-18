@@ -9,9 +9,9 @@ fz_pi = newfis("FZ-PI");
 fz_pi.type = 'mamdani';
 fz_pi.AndMethod = 'min';
 fz_pi.ImplicationMethod = 'min'; % mamdani imp operator
-fz_pi.OrMethod = 'max';
 fz_pi.AggregationMethod = 'max';
 fz_pi.DefuzzificationMethod = 'centroid';
+fz_pi.OrMethod = 'max';
 
 % Add control variables
 fz_pi = addvar(fz_pi,'input', 'E', [-1 1]);
@@ -67,4 +67,59 @@ writefis(fz_pi,"FZ_PI.fis");
 %% Run first the simulation in Simulink
 ref_resp = load('pi_resp.mat');
 pi_resp = load('fz_pi_resp.mat');
+
+figure;
+plot(ref_resp.resp.Time,ref_resp.resp.Data);
+hold on;
+plot(pi_resp.resp.Time,pi_resp.resp.Data);
+
+xlabel('Time in seconds');
+ylabel('Rad/s');
+legend('Classic PI','Fuzzy PI (Initial)');
+stepinfo(pi_resp.resp.Data,pi_resp.resp.Time)
+
+%%
+
+ref_resp = load('pi_resp.mat');
+pi_resp = load('fz_pi_resp.mat');
+fz_pi_resp_tuned = load('fz_pi_resp_tuned.mat');
+
+figure;
+plot(ref_resp.resp.Time,ref_resp.resp.Data);
+hold on;
+plot(pi_resp.resp.Time,pi_resp.resp.Data);
+hold on;
+plot(fz_pi_resp_tuned.resp.Time,fz_pi_resp_tuned.resp.Data);
+xlabel('Time in seconds');
+ylabel('Rad/s');
+legend('Classic PI','Fuzzy PI (Initial)','Fuzzy PI (Tuned)');
+
+stepinfo(fz_pi_resp_tuned.resp.Data,fz_pi_resp_tuned.resp.Time)
+
+%% Ruleviewer
+ruleview(fz_pi);
+out = evalfis([0.25 0],fz_pi);
+fprintf("Output of Du given as input [0.25,0]: %f\n",out);
+
+gensurf(fz_pi);
+
+
+%% Ramp Response
+
+ref_resp = load('ref_sig.mat');
+pi_resp = load('pi_resp.mat');
+fz_pi_resp_tuned = load('fz_pi_resp_tuned.mat');
+
+figure;
+plot(ref_resp.resp.Time,ref_resp.resp.Data);
+hold on;
+plot(pi_resp.resp.Time,pi_resp.resp.Data);
+hold on;
+plot(fz_pi_resp_tuned.resp.Time,fz_pi_resp_tuned.resp.Data);
+xlabel('Time in seconds');
+ylabel('Rad/s');
+legend('Reference Signal','Classical PI','Fuzzy PI (Tuned)');
+
+
+
 

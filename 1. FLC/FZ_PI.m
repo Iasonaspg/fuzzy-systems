@@ -38,4 +38,33 @@ plotmf(fz_pi,'input',ind_de)
 figure;
 plotmf(fz_pi,'output',ind_du)
 
+% Create and add rule bases
+in_values = [-4 -3 -2 -1 0 1 2 3 4];
+out_values = [-3 -2 -1 0 1 2 3];
+
+ub = max(out_values);
+lb = -ub;
+rules = [];
+for i=1:length(E_labels)
+    x = in_values(i);
+    for j=1:length(dE_labels)
+        y = in_values(j);
+        z = max( min(x+y,ub), lb);
+        out_ind = find(out_values == z);
+        rule = [i j out_ind 1 1];
+        rules = [rules; rule];
+    end
+end
+fz_pi = addrule(fz_pi,rules);
+
+Kp = 2.4;
+Ki = 0.2640;
+alpha = min(Kp/Ki,1);
+
+writefis(fz_pi,"FZ_PI.fis");
+
+
+%% Run first the simulation in Simulink
+ref_resp = load('pi_resp.mat');
+pi_resp = load('fz_pi_resp.mat');
 

@@ -61,7 +61,7 @@ Kp = 2.4;
 Ki = 0.2640;
 alpha = min(Kp/Ki,1);
 
-writefis(fz_pi,"FZ_PI.fis");
+writefis(fz_pi,"./Mat_files/FZ_PI.fis");
 
 
 %% Run first the simulation in Simulink

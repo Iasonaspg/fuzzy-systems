@@ -1,5 +1,5 @@
 [System]
-Name='CarControl'
+Name='Improved_CarControl'
 Type='mamdani'
 Version=2.0
 NumInputs=3
@@ -43,13 +43,13 @@ MF5='PL':'trimf',[90 180 270]
 
 [Output1]
 Name='dTheta'
-Range=[-130 130]
+Range=[-145 145]
 NumMFs=5
-MF1='NL':'trimf',[-195 -130 -65]
-MF2='NS':'trimf',[-130 -65 0]
-MF3='ZE':'trimf',[-65 0 65]
-MF4='PS':'trimf',[0 65 130]
-MF5='PL':'trimf',[65 130 195]
+MF1='NL':'trimf',[-217.5 -145 -72.5]
+MF2='NS':'trimf',[-145 -72.5 0]
+MF3='ZE':'trimf',[-72.5 0 72.5]
+MF4='PS':'trimf',[0 72.5 145]
+MF5='PL':'trimf',[72.5 145 217.5]
 
 [Rules]
 1 1 4, 5 (1) : 1

@@ -6,6 +6,7 @@ close all;
 
 % Read FIS model
 flc = readfis('./CarControl.fis');
+flc2 = readfis('./Improved_CarControl.fis');
 
 % Plot membership functions
 dV_labels  = ["VS","S","M","L","VL"];
@@ -38,13 +39,37 @@ v = 0.05; % constant velocity
 obs_x = [5 5 6 6 7 7 10];
 obs_y = [0 1 1 2 2 3 3];
 
-plot(obs_x,obs_y);
-xlim([0 10]);
-ylim([0 4]);
+thetas = [0,-45,-90];
+for i = 1:length(thetas)
+    xi = x0;
+    yi = y0;
+    route = [xi yi];
+    theta = thetas(i);
+    d = [];
+    while (xi <= x_des)
+        [dH,dV] = get_dist(xi,yi,obs_x,obs_y);
+        d = [d; [xi yi dH dV]];
+        dTheta = evalfis([dV dH theta],flc2);
+        theta = theta + dTheta;
+        if (theta > 180); theta = theta - 360; end
+        if (theta < -180); theta = theta + 360; end
+        xi = xi + v*cosd(theta);
+        yi = yi + v*sind(theta);
+        route = [route ; [xi yi]];
+    end
 
-
-
-
+    fprintf("Final position: (%f,%f)\n",xi,yi);
+    figure;
+    plot(obs_x,obs_y);
+    xlim([0 10]);
+    ylim([0 4]);
+    hold on;
+    plot(route(:,1),route(:,2));
+    grid;
+    plot(x0,y0,'*');
+    plot(x_des,y_des,'*');
+    title("Initial theta = " + thetas(i) + " degrees");
+end
 
 
 

@@ -35,6 +35,10 @@ for i=1:size(classes,1)
         ,classes(i),rows_per_class(i),p_tr_i,p_val_i,p_test_i);
 end
 
+Dtr  = Dtr(randperm(size(Dtr,1)),:);
+Dval  = Dval(randperm(size(Dval,1)),:);
+Dtest = Dtest(randperm(size(Dtest,1)),:);
+
 X_tr   = Dtr(:,1:end-1);
 X_val  = Dval(:,1:end-1);
 X_test = Dtest(:,1:end-1);
@@ -61,7 +65,7 @@ for i=1:length(r_a)
     if class_dependent_flag(i) == false
         [TSK_fis,train_error,TSK_fis_tuned,val_error] = TSK_classification_model(X_tr,Y_tr,Dval,r_a(i),epoch);
     else
-        [TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_training(Dtr,Dval,classes,r_a(i),epoch);
+        [~,TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_training(Dtr,Dval,classes,r_a(i),epoch);
     end
 
     % Plot trained membership functions 
@@ -77,7 +81,7 @@ for i=1:length(r_a)
     plot(train_error)
     hold on;
     plot(val_error)
-    %ylim([0.25 0.5]);
+    ylim([0.2 1]);
     ylabel('Error')
     xlabel('Epoch')
     legend('Training','Validation')
@@ -92,8 +96,9 @@ for i=1:length(r_a)
     disp(UA);
     fprintf("conf_mat: \n");
     disp(conf_mat);
+    
+    ruleview(TSK_fis_tuned);
 end
 
 toc(start);
-
 

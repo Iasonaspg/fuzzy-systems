@@ -6,6 +6,7 @@ function plot_mfs(fis,model_id,identifier)
     p.TitlePosition = 'centertop'; 
     p.FontSize = 12;
     p.FontWeight = 'bold';
+    p.BackgroundColor = 'white';
     size = length(fis.input);
     rows = ceil(size/2);
     for i=1:size

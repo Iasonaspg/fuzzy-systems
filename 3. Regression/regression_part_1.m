@@ -54,9 +54,11 @@ for i=1:length(Input_MFs)
     anfis_opt = anfisOptions();
     anfis_opt.InitialFIS = TSK_fis;
     anfis_opt.EpochNumber = epochs;
-    anfis_opt.DisplayANFISInformation = 0;
+    anfis_opt.DisplayANFISInformation = false;
     anfis_opt.DisplayFinalResults = 1;
+    anfis_opt.DisplayStepSize = 0;
     anfis_opt.ValidationData = Dval;
+    anfis_opt.DisplayErrorValues = 0;
     anfis_opt.OptimizationMethod = 1; % hybrid method, backpropagation + least squares
     
     % plot initial membership functions

@@ -124,7 +124,8 @@ Dtr_trunc = [X_tr(:,feat_ind) Y_tr];
 Dval_trunc = [X_val(:,feat_ind) Y_val];
 Dtest_trunc = [X_test(:,feat_ind) Y_test];
 
-TSK_fis = genfis(Dtr_trunc(:,1:end-1),Y_tr,opt); 
+TSK_fis = genfis(Dtr_trunc(:,1:end-1),Y_tr,opt);
+init_fis = TSK_fis;
 
 % Train the final TSK model
 anfisOpt = anfisOptions();
@@ -160,8 +161,7 @@ xlabel('Epoch')
 ylabel('Error')
 
 %% Plot MFs
-combine_mfs(TSK_fis,TSK_fis_tuned,2);
-combine_mfs(TSK_fis,TSK_fis_tuned,3);
+plot_fuzzy_rules(init_fis,TSK_fis_tuned,3);
 
 %% Calculate metrics
 RMSE = rmse(Y_test,Y_pred);

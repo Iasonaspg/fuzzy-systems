@@ -1,4 +1,4 @@
-function [TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_training(Dtr,Dval,classes,r,epoch)
+function [init_fis,TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_training(Dtr,Dval,classes,r,epoch)
     nclasses = length(classes);
     min_cl = min(classes);
     max_cl = max(classes);
@@ -6,14 +6,14 @@ function [TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_trainin
     
     % conduct subtractive clustering for each class
     rules = [];
-    rule_ptr = 0;
+    rule_ptr = zeros(1,nclasses+1);
     centers = [];
     sigmas = [];
     for i=1:nclasses
         [c, sig] = subclust( Dtr(Dtr(:,end)==classes(i),:), r);
         centers = [centers; c];
         sigmas = [sigmas; sig];
-        rule_ptr = [rule_ptr size(c,1)];
+        rule_ptr(i+1) = rule_ptr(i) + size(c,1);
         rules = [rules size(c,1)];
     end
     nRules = sum(rules);
@@ -33,16 +33,21 @@ function [TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_trainin
     % Each input needs one MF for each cluster
     for i=1:inputs
         for j=1:nclasses
+            offset = rule_ptr(j);
             for k=1:rules(j)
                 TSK_fis=addmf(TSK_fis,'input',i,sprintf("%s_mf_%d",TSK_fis.input(i).name,k),'gaussmf',...
-                    [sigmas(j,i) centers((j-1)*rule_ptr(j)+k,i)]);
+                    [sigmas(j,i) centers(offset+k,i)]);
             end  
         end
     end
     
     % Each output needs one MF for each cluster
+    params = [];
+    for i=1:nclasses
+       params = [params i*ones(1,rules(i))] ;
+    end
     for i=1:nRules
-        TSK_fis = addmf(TSK_fis,'output',1,sprintf("%s_mf_%d",TSK_fis.output.name,i),'constant',[1]);
+        TSK_fis = addmf(TSK_fis,'output',1,sprintf("%s_mf_%d",TSK_fis.output.name,i),'constant',params(i));
     end
 
     % One rule for each cluster. It has the form [rule_id rule_id rule_id ... rule_id]
@@ -52,6 +57,7 @@ function [TSK_fis,train_error,TSK_fis_tuned,val_error] = class_dependent_trainin
     end
     ruleList=[ruleList ones(nRules,2)];
     TSK_fis = addrule(TSK_fis,ruleList);
+    init_fis = TSK_fis;
 
     % Tune final model
     anfis_opt = anfisOptions();
